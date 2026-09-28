@@ -1,40 +1,17 @@
 # Rishi / notes
 
-Minimal technical blog for `blogs.rishirajpal.com`, built with Astro and Markdown.
+This repository contains the source for [Rishi / notes](https://blogs.rishirajpal.com), a technical blog built with Astro. Posts are Markdown files; Astro turns them into static pages and an RSS feed.
 
-## Run locally
+## Repository structure
 
-```sh
-npm install
-npm run dev
-```
+| Path | Contents |
+| --- | --- |
+| `src/content/blog/` | Blog posts in Markdown. |
+| `src/content.config.ts` | The blog collection schema. |
+| `src/pages/` | The homepage, article pages, About page, architecture page, and RSS feed. |
+| `src/lib/posts.ts` | Shared post filtering, ordering, dates, and URLs. |
+| `src/layouts/` and `src/styles/` | Shared page layout and site styles. |
+| `public/` | Static assets, including Canvas screenshots and the standalone architecture map. |
+| `.archify/` and `docs/architecture.md` | Architecture map source and repository architecture notes. |
 
-Open the local URL Astro prints (normally `http://localhost:4321`). To check the static output, run `npm run build` and `npm run preview`.
-
-## Write a post
-
-Add a Markdown file under `src/content/blog/`. The filename becomes the URL (`my-post.md` → `/blog/my-post/`). Use frontmatter like this:
-
-```md
----
-title: My post title
-description: A short summary for the homepage and search previews.
-publishedAt: 2026-09-28
-tags: [Architecture]
-draft: false
----
-
-Your post starts here.
-```
-
-`draft: true` keeps a post out of the homepage, RSS feed, and generated pages. `updatedAt` is optional. The first published post is `src/content/blog/building-canvas.md`.
-
-## Deployment
-
-The project generates a static `dist/` directory with canonical URLs on `https://blogs.rishirajpal.com`. Cloudflare deployment uses the checked-in `wrangler.jsonc` configuration:
-
-```sh
-npm run check
-npm run build
-npx wrangler deploy
-```
+The homepage, article pages, and RSS feed read from the same Astro content collection. The `/arch/` page embeds `public/arch-map.html`; the map's source and supporting notes are kept in this repository.

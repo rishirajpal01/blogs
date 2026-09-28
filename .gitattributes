@@ -1,0 +1,4 @@
+# Archify output is documentation, not application source.
+.archify/** linguist-documentation
+docs/architecture.md linguist-documentation
+public/arch-map.html linguist-documentation

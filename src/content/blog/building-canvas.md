@@ -9,6 +9,11 @@ I built [Canvas](https://canvas.rishirajpal.com) as a collaborative pixel art ap
 
 The result is playful. The system underneath had to answer less playful questions. Who owns a board’s state? What happens when two people paint while someone replaces the entire image? How do I stream thousands of updates without making the browser or network do unnecessary work? And how do I keep temporary boards from accumulating forever?
 
+<figure class="article-figure">
+  <a href="/images/canvas/night-sky.jpg"><img src="/images/canvas/night-sky.jpg" alt="Canvas running in a browser with the Night Sky board, its star-filled artwork, drawing tools, and board navigation" width="1512" height="1092" decoding="async" /></a>
+  <figcaption>Night Sky on the live Canvas site. Screenshot from the <a href="https://github.com/rishirajpal01/canvas#screenshots">Canvas README</a>, captured 27 September 2026; shared artwork can change.</figcaption>
+</figure>
+
 ## From a Go server to Cloudflare
 
 Production runs on Cloudflare Pages, Pages Functions, a private Worker, and SQLite-backed Durable Objects. Pages serves the HTML, CSS, and JavaScript. A Pages Function forwards API requests to the Worker. The Worker uses a catalogue Durable Object for board metadata and routes each board ID to its own board Durable Object.
@@ -29,7 +34,22 @@ The harder problem is a stale client. Imagine one person starting a long live fi
 
 Auto Fill generates a fresh design and replaces the board in one operation. Auto Fill Live creates a target design, clears the visible board, and reveals it pixel by pixel. The generators are theme-aware: Pixel Garden draws a winding path and vegetation, Tiny Town builds a road and landscape, and Night Sky combines a dark horizon, stars, and a dithered Milky Way. Daily Mosaic chooses among several abstract styles.
 
+<figure class="article-figure">
+  <a href="/images/canvas/pixel-garden.jpg"><img src="/images/canvas/pixel-garden.jpg" alt="Canvas Pixel Garden board showing a winding path bordered by flowers and greenery" width="1512" height="1092" loading="lazy" decoding="async" /></a>
+  <figcaption>Pixel Garden’s generated path and vegetation.</figcaption>
+</figure>
+
+<figure class="article-figure">
+  <a href="/images/canvas/tiny-town.jpg"><img src="/images/canvas/tiny-town.jpg" alt="Canvas Tiny Town board showing a road, buildings, and a mountain landscape" width="1512" height="1092" loading="lazy" decoding="async" /></a>
+  <figcaption>Tiny Town’s road and landscape.</figcaption>
+</figure>
+
 Kaleidoscope is different. Its generator varies rings, spokes, phase, and color schemes while deriving the pattern from mirrored coordinates. Random input changes the design, but the result remains symmetric. Live filling groups mirrored pixel orbits so one batch never leaves the pattern visibly half-finished.
+
+<figure class="article-figure">
+  <a href="/images/canvas/kaleidoscope.jpg"><img src="/images/canvas/kaleidoscope.jpg" alt="Canvas Kaleidoscope board displaying a colorful symmetric circular pixel-art pattern" width="1512" height="1092" loading="lazy" decoding="async" /></a>
+  <figcaption>A completed symmetric Kaleidoscope pattern.</figcaption>
+</figure>
 
 Sending one HTTP request per pixel would be wasteful. The live-fill client groups events into batches of at most 64, and the server validates and broadcasts each batch. For a non-Kaleidoscope fill covering all 40,000 cells, that changes the request count from 40,000 theoretical single-pixel calls to 625 batches. This is a reduction in request count, not a claim that the feature is 64 times faster end to end. Network latency, storage writes, and the intentional reveal animation still matter.
 
@@ -42,6 +62,11 @@ Navigation received similar attention. Sidebar links update browser history and 
 ## Board lifecycles and deployment
 
 Collaboration is more interesting when users can create their own spaces, but unlimited board creation would make storage grow without bound. Custom boards expire exactly 168 hours after creation. Daily Mosaic rotates at midnight in Asia/Kolkata; today and the six previous India dates remain available, with older dates read only. The catalogue prunes expired metadata during normal access and uses alarms for scheduled cleanup. Board objects also have expiry alarms for their stored state. Built-in boards remain available.
+
+<figure class="article-figure">
+  <a href="/images/canvas/daily-mosaic.jpg"><img src="/images/canvas/daily-mosaic.jpg" alt="Canvas Daily Mosaic board with colorful abstract pixel art and date-based board navigation" width="1512" height="1194" loading="lazy" decoding="async" /></a>
+  <figcaption>A Daily Mosaic board, which rotates at midnight in Asia/Kolkata.</figcaption>
+</figure>
 
 Photo recreation is limited to custom boards. The browser reads the image, scales it to the allowed dimensions, and maps its pixels to the 16-color palette locally. The original file is not uploaded; the server receives the palette target needed to build the shared artwork. That keeps the data model consistent with every other board and avoids storing original photos.
 

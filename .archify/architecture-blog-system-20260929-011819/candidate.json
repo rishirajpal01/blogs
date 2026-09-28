@@ -1,0 +1,162 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Rishi / notes repository architecture",
+    "output": ".archify/architecture-blog-system-20260929-011819/blog-system.html",
+    "quality_profile": "showcase",
+    "repository": {
+      "url": "git@github.com:rishirajpal01/blogs.git",
+      "link_mode": "local-only",
+      "revision": "186340fd22724bf5beb373fcb668829d0a6ac388"
+    }
+  },
+  "components": [
+    {
+      "id": "github",
+      "type": "external",
+      "label": "GitHub main",
+      "sublabel": "Source branch",
+      "pos": [60, 70],
+      "size": [155, 66],
+      "sources": [{ "path": "README.md", "line": 42 }]
+    },
+    {
+      "id": "cloudflare_builds",
+      "type": "cloud",
+      "label": "Workers Builds",
+      "sublabel": "Build on main push",
+      "pos": [320, 70],
+      "size": [166, 66],
+      "sources": [{ "path": "README.md", "line": 42 }]
+    },
+    {
+      "id": "markdown",
+      "type": "external",
+      "label": "Markdown posts",
+      "sublabel": "src/content/blog",
+      "pos": [60, 315],
+      "size": [155, 66],
+      "sources": [{ "path": "src/content/blog/building-canvas.md", "line": 1, "end_line": 6 }]
+    },
+    {
+      "id": "collection",
+      "type": "backend",
+      "label": "Blog collection",
+      "sublabel": "Schema + draft filter",
+      "pos": [320, 315],
+      "size": [166, 66],
+      "sources": [
+        { "path": "src/content.config.ts", "line": 5, "end_line": 17 },
+        { "path": "src/lib/posts.ts", "line": 3, "end_line": 8 }
+      ]
+    },
+    {
+      "id": "astro_build",
+      "type": "backend",
+      "label": "Astro static build",
+      "sublabel": "Pages + RSS output",
+      "pos": [600, 315],
+      "size": [173, 66],
+      "sources": [
+        { "path": "astro.config.mjs", "line": 3, "end_line": 7 },
+        { "path": "package.json", "line": 6, "end_line": 10 }
+      ]
+    },
+    {
+      "id": "static_output",
+      "type": "frontend",
+      "label": "Static dist/",
+      "sublabel": "HTML, CSS, RSS",
+      "pos": [885, 315],
+      "size": [160, 66],
+      "sources": [
+        { "path": "README.md", "line": 32, "end_line": 39 },
+        { "path": "wrangler.jsonc", "line": 5, "end_line": 7 }
+      ]
+    },
+    {
+      "id": "cloudflare_worker",
+      "type": "cloud",
+      "label": "Cloudflare Worker",
+      "sublabel": "blogs.rishirajpal.com",
+      "pos": [1150, 315],
+      "size": [180, 66],
+      "sources": [{ "path": "wrangler.jsonc", "line": 2, "end_line": 14 }]
+    },
+    {
+      "id": "visitor",
+      "type": "external",
+      "label": "Reader browser",
+      "sublabel": "Writing, posts, /arch",
+      "pos": [1440, 315],
+      "size": [160, 66],
+      "sources": [
+        { "path": "src/layouts/BaseLayout.astro", "line": 39, "end_line": 53 },
+        { "path": "src/pages/arch.astro", "line": 5, "end_line": 17 }
+      ]
+    },
+    {
+      "id": "page_routes",
+      "type": "frontend",
+      "label": "Page routes",
+      "sublabel": "Index, post, /arch, RSS",
+      "pos": [320, 560],
+      "size": [166, 66],
+      "sources": [
+        { "path": "src/pages/index.astro", "line": 2, "end_line": 8 },
+        { "path": "src/pages/blog/[id].astro", "line": 6, "end_line": 15 },
+        { "path": "src/pages/arch.astro", "line": 5, "end_line": 17 }
+      ]
+    },
+    {
+      "id": "wrangler_config",
+      "type": "backend",
+      "label": "Wrangler config",
+      "sublabel": "Asset dir + domain",
+      "pos": [1150, 560],
+      "size": [180, 66],
+      "sources": [{ "path": "wrangler.jsonc", "line": 2, "end_line": 14 }]
+    }
+  ],
+  "connections": [
+    { "id": "push_triggers", "from": "github", "to": "cloudflare_builds", "label": "push to main" },
+    { "id": "builds_run_astro", "from": "cloudflare_builds", "to": "astro_build", "label": "npm run build" },
+    { "id": "posts_loaded", "from": "markdown", "to": "collection", "label": "glob load" },
+    { "id": "collection_rendered", "from": "collection", "to": "astro_build", "label": "published posts" },
+    { "id": "routes_rendered", "from": "page_routes", "to": "astro_build", "label": "render routes" },
+    { "id": "build_writes_dist", "from": "astro_build", "to": "static_output", "label": "emit files", "variant": "emphasis" },
+    { "id": "dist_deployed", "from": "static_output", "to": "cloudflare_worker", "label": "wrangler deploy", "variant": "emphasis" },
+    { "id": "configures_worker", "from": "wrangler_config", "to": "cloudflare_worker", "label": "assets + domain" },
+    { "id": "serves_reader", "from": "cloudflare_worker", "to": "visitor", "label": "static response", "variant": "emphasis" }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "Publishing a post",
+      "items": [
+        "Add Markdown with title, description, date and optional tags.",
+        "The collection validates frontmatter and filters drafts.",
+        "Astro creates a page per published post and an RSS feed."
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "Deploying a change",
+      "items": [
+        "Cloudflare watches the GitHub main branch.",
+        "Workers Builds runs npm run build, then npx wrangler deploy.",
+        "Wrangler publishes dist/ to blogs.rishirajpal.com."
+      ]
+    },
+    {
+      "dot": "slate",
+      "title": "Page surface",
+      "items": [
+        "The shared layout provides navigation, metadata and footer.",
+        "Routes include the index, posts, About, /arch, RSS and 404.",
+        "The /arch page embeds this standalone Archify document."
+      ]
+    }
+  ]
+}

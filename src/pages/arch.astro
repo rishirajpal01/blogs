@@ -1,0 +1,19 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="Architecture — Rishi / notes" description="An interactive, source-backed map of how this technical blog is built and deployed.">
+  <section class="arch-page" aria-labelledby="arch-title">
+    <header class="arch-intro">
+      <p class="eyebrow">Behind this journal</p>
+      <h1 id="arch-title">How this site works.</h1>
+      <p>Follow a post from Markdown through Astro’s static build to Cloudflare, or trace what happens when a change reaches <code>main</code>.</p>
+    </header>
+    <div class="arch-toolbar">
+      <span>Interactive architecture map</span>
+      <a href="/arch-map.html">Open the full map <span aria-hidden="true">↗</span></a>
+    </div>
+    <iframe class="arch-frame" src="/arch-map.html" title="Interactive architecture map of this blog" loading="eager"></iframe>
+    <p class="arch-note">The diagram is based on this repository’s source and records the commit it describes. Open the full map for more room to explore.</p>
+  </section>
+</BaseLayout>
