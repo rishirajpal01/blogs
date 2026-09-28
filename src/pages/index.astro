@@ -1,0 +1,39 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { formatDate, getPublishedPosts, postUrl } from '../lib/posts';
+
+const posts = await getPublishedPosts();
+---
+
+<BaseLayout title="Rishi / notes — Technical writing" description="Technical writing by Rishi Rajpal on building software and the decisions behind it.">
+  <section class="home-hero" aria-labelledby="home-title">
+    <p class="eyebrow">A personal technical journal</p>
+    <h1 id="home-title">Thinking out loud<br class="desktop-break" /> about software.</h1>
+    <p class="hero-summary">Technical writing by Rishi Rajpal on building software and the decisions behind it.</p>
+  </section>
+
+  <section class="post-section" aria-labelledby="posts-title">
+    <div class="section-heading">
+      <h2 id="posts-title">Latest writing</h2>
+      <span>{posts.length} {posts.length === 1 ? 'essay' : 'essays'}</span>
+    </div>
+    {posts.length ? (
+      <ol class="post-list">
+        {posts.map((post) => (
+          <li>
+            <article class="post-row">
+              <time datetime={post.data.publishedAt.toISOString()}>{formatDate(post.data.publishedAt)}</time>
+              <div class="post-main">
+                <h3><a href={postUrl(post.id)}>{post.data.title}</a></h3>
+                <p>{post.data.description}</p>
+              </div>
+              <span class="post-kind">{post.data.tags[0] ?? 'Essay'} <span aria-hidden="true">↗</span></span>
+            </article>
+          </li>
+        ))}
+      </ol>
+    ) : (
+      <p class="empty-state">No posts yet. The first essay is on its way.</p>
+    )}
+  </section>
+</BaseLayout>

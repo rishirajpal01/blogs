@@ -1,0 +1,54 @@
+---
+import '../styles/global.css';
+
+interface Props {
+  title: string;
+  description: string;
+  canonicalPath?: string;
+  type?: 'website' | 'article';
+}
+
+const {
+  title,
+  description,
+  canonicalPath = Astro.url.pathname,
+  type = 'website',
+} = Astro.props;
+const siteName = 'Rishi / notes';
+const canonical = new URL(canonicalPath, Astro.site).toString();
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#faf9f5" />
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="alternate" type="application/rss+xml" title={`${siteName} RSS feed`} href="/rss.xml" />
+    <meta property="og:type" content={type} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <title>{title}</title>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <div class="site-shell">
+      <header class="site-header">
+        <a class="brand" href="/" aria-label="Rishi / notes, home">Rishi <span>/</span> notes</a>
+        <nav class="site-nav" aria-label="Main navigation">
+          <a href="/">Writing</a>
+          <a href="/about/">About</a>
+          <a href="/rss.xml">RSS <span aria-hidden="true">↗</span></a>
+        </nav>
+      </header>
+      <main id="main"><slot /></main>
+      <footer class="site-footer">
+        <span>© {new Date().getFullYear()} Rishi Rajpal</span>
+      </footer>
+    </div>
+  </body>
+</html>

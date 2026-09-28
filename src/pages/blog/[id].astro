@@ -1,0 +1,30 @@
+---
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { formatDate, postUrl } from '../../lib/posts';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('blog', ({ data }) => !data.draft);
+  return posts.map((post) => ({ params: { id: post.id }, props: { post } }));
+}
+
+const { post } = Astro.props;
+const { Content } = await render(post);
+---
+
+<BaseLayout title={`${post.data.title} — Rishi / notes`} description={post.data.description} canonicalPath={postUrl(post.id)} type="article">
+  <article class="article-page">
+    <a class="back-link" href="/">← All writing</a>
+    <header class="article-header">
+      <p class="eyebrow">{post.data.tags[0] ?? 'Essay'}</p>
+      <h1>{post.data.title}</h1>
+      <p class="article-deck">{post.data.description}</p>
+      <div class="article-meta">
+        <time datetime={post.data.publishedAt.toISOString()}>{formatDate(post.data.publishedAt)}</time>
+        {post.data.updatedAt && <span>Updated {formatDate(post.data.updatedAt)}</span>}
+      </div>
+    </header>
+    <div class="article-body"><Content /></div>
+    <footer class="article-footer"><a class="text-link" href="/">← More writing</a></footer>
+  </article>
+</BaseLayout>
